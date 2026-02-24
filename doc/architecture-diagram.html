@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R Library Refactoring — Design Sketch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f6f2;
+    --ink: #1a1a18;
+    --muted: #888880;
+    --pkg-bg: #fff;
+    --pkg-border: #1a1a18;
+    --exported-bg: #1a1a18;
+    --exported-fg: #f7f6f2;
+    --internal-bg: #f0ede4;
+    --internal-border: #ccc9be;
+    --dep-bg: #e8f0e8;
+    --dep-border: #4a7c4a;
+    --dep-fg: #2a4f2a;
+    --old-bg: #fff5f0;
+    --old-border: #d4704a;
+    --old-fg: #7a3520;
+    --arrow: #888880;
+    --accent: #c84a1e;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 48px 32px;
+  }
+
+  header {
+    max-width: 960px;
+    margin: 0 auto 48px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  header .meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .canvas {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── Flow row (before → after) ── */
+  .flow-row {
+    display: grid;
+    grid-template-columns: 1fr 56px 1fr;
+    gap: 0;
+    align-items: start;
+  }
+
+  .flow-arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 60px;
+    color: var(--muted);
+    font-size: 1.6rem;
+    gap: 6px;
+  }
+  .flow-arrow-col span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  /* ── Old scripts panel ── */
+  .old-panel {
+    border: 1.5px dashed var(--old-border);
+    border-radius: 6px;
+    background: var(--old-bg);
+    padding: 20px;
+  }
+  .old-panel h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--old-fg);
+    margin-bottom: 16px;
+    letter-spacing: 0.04em;
+  }
+  .old-script {
+    background: #fff;
+    border: 1px solid var(--old-border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.74rem;
+  }
+  .old-script .filename {
+    color: var(--old-fg);
+    font-weight: 600;
+  }
+  .old-script .fns {
+    color: var(--muted);
+    margin-top: 4px;
+    font-size: 0.68rem;
+    line-height: 1.6;
+  }
+
+  /* ── Package panel ── */
+  .pkg-panel {
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    background: var(--pkg-bg);
+    overflow: hidden;
+  }
+  .pkg-header {
+    background: var(--ink);
+    color: var(--exported-fg);
+    padding: 10px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pkg-header .badge {
+    font-size: 0.64rem;
+    background: var(--accent);
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+  }
+  .pkg-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ── Module card ── */
+  .module {
+    border: 1.5px solid var(--internal-border);
+    border-radius: 4px;
+    background: var(--internal-bg);
+    overflow: hidden;
+  }
+  .module-header {
+    background: var(--internal-border);
+    padding: 5px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+  }
+  .module-fns {
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .fn-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    padding: 3px 10px;
+    border-radius: 2px;
+    border: 1px solid var(--internal-border);
+    background: #fff;
+    color: var(--ink);
+  }
+  .fn-tag.exported {
+    background: var(--exported-bg);
+    color: var(--exported-fg);
+    border-color: var(--exported-bg);
+    font-weight: 600;
+  }
+
+  /* ── Dependency row ── */
+  .dep-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 18px 18px;
+  }
+  .dep-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    padding: 4px 12px;
+    border-radius: 2px;
+    border: 1.5px solid var(--dep-border);
+    background: var(--dep-bg);
+    color: var(--dep-fg);
+  }
+  .dep-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    margin-bottom: 4px;
+  }
+
+  /* ── Data flow diagram ── */
+  .flow-diagram {
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    background: var(--pkg-bg);
+    padding: 28px 24px;
+  }
+  .flow-diagram h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    row-gap: 16px;
+  }
+  .flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 110px;
+  }
+  .step-box {
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 10px 14px;
+    text-align: center;
+    width: 100%;
+    max-width: 140px;
+    background: #fff;
+  }
+  .step-box .step-module {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .step-box .step-fn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .step-box .step-io {
+    font-size: 0.64rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .step-box.exported-step {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .step-box.exported-step .step-module,
+  .step-box.exported-step .step-fn,
+  .step-box.exported-step .step-io {
+    color: #ccc;
+  }
+  .step-box.exported-step .step-fn {
+    color: #fff;
+  }
+
+  .step-arrow {
+    font-size: 1.1rem;
+    color: var(--arrow);
+    padding: 0 4px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: -18px;
+  }
+  .step-arrow-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--internal-border);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .legend-swatch {
+    width: 28px;
+    height: 14px;
+    border-radius: 2px;
+    border: 1.5px solid;
+    flex-shrink: 0;
+  }
+
+  /* ── Open questions ── */
+  .questions {
+    background: #fffbea;
+    border: 1.5px solid #d4b84a;
+    border-radius: 6px;
+    padding: 20px 24px;
+  }
+  .questions h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: #7a6010;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .questions ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .questions li {
+    font-size: 0.82rem;
+    color: #5a4810;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .questions li::before {
+    content: '?';
+    position: absolute;
+    left: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    color: #d4b84a;
+  }
+
+  .connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    flex-shrink: 0;
+    margin-top: -18px;
+  }
+  .connector .c-arrow {
+    font-size: 1.1rem;
+    color: var(--arrow);
+  }
+  .connector .c-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Global BIT R analysis package — library refactor v1</h1>
+  <div class="meta">
+    Status: DRAFT FOR REVIEW<br>
+    Author: IW / Date: 2026-02-23<br>
+    Version: 0.1
+  </div>
+</header>
+
+<div class="canvas">
+
+  <!-- ═══ BEFORE / AFTER ═══ -->
+  <div>
+    <div class="section-label">01 — Before &amp; After Structure</div>
+    <div class="flow-row">
+
+      <!-- BEFORE -->
+      <div class="old-panel">
+        <h2>Existing scripts</h2>
+        <div class="old-script">
+          <div class="filename">bitapac: convenience.R</div>
+          <div class="fns">`%||%`(), finyear(), state_order(), clean_reg(), 
+            estimation(), estimate_models(), tidy_estimates(), bh_correction(), 
+            select_treatment_rows(), bit_treatment_plot()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">bitapac: extensions.R</div>
+          <div class="fns"> tidy.logitmfx(), tidy.probitmfx(), tidy.poissonmfx(),
+            tidy.lmerModLmerTest(), tidy.lmerMod(), tidy.reg.coef(), 
+            tidy.summary.margins(), print.reg.coef(), glance.reg.coef(), 
+            glance.logitmfx(), glance.poissonmfx(), nobs.reg.coef(), 
+            nobs.logitmfx(), nobs.poissonmfx(), summary.reg.coef(), tidy.RD()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">bitapac: ggplot.R</div>
+          <div class="fns">theme_bit(), set_theme_BIT(), sig_stars(), 
+            scale_fill_BIT(), scale_colour_BIT(), scale_color_BIT(), save_plot(), 
+            save_BIT_plot(), hide_legend(), hide_yaxis(), theme_vert_flip(),
+            graph_flip()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">bitapac: randomisation.R</div>
+          <div class="fns">.randomise_vec(), randomise(), balance_t_stat(), 
+            sim_randomise(), rerandomise(), manual_balance_check(), multiply()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">bitapac: survey_backend.R</div>
+          <div class="fns">.make_discrete(), .nice_label(), .apply_relabel(), 
+            build_question_spec(), summarise_question() 
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">bitapac: survey_functions.R</div>
+          <div class="fns">collapse_headers(), tidyNames(), standard_responses(), 
+            .percent_fmt(), .count_respondents(), .remove_linebreaks(), 
+            .make_discrete(), .make_bar_label(), .prepare_question_data(), 
+            summarise_survey_question(), summarise_survey_question_group(), 
+            run_survey_app() 
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">bitapac: wrappers.R</div>
+          <div class="fns">lm_robust(), lm_cluster(), glm_robust(), 
+            glm_cluster(), glm_margins(), glmer_margins(), print_reg()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: BITBarplotShiny.R</div>
+          <div class="fns">BITBarplotShiny()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: BITplot.R</div>
+          <div class="fns">
+            BITplot(), plotLogistic(), plotLinear(), plotFelm()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: ggplot.R</div>
+          <div class="fns">theme_bit(), set_theme_BIT(), sig_stars(), 
+            scale_fill_BIT(), scale_colour_BIT(), scale_color_BIT(), save_plot(),
+             hide_legend(), hide_yaxis(), theme_vert_flip, graph_flip()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: LEswitch.R</div>
+          <div class="fns">convertLineEnding()</div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: pilotPower.R</div>
+          <div class="fns">pilotPowerOLS()</div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: powerTools.R</div>
+          <div class="fns">
+            cohensH(), rquasipoisson(), dquasipoisson(), qquasipoisson(), 
+            pquasipoisson()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: setBITPalette.R</div>
+          <div class="fns">
+            setBITPalette(), setTBPalette(), setAppliedPalette(), BITColorScale(), 
+            BITBarplot(), BITBarplot24()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: stratifyRandomise.R</div>
+          <div class="fns">stratifyRandomise()</div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: wrappers.R</div>
+          <div class="fns">
+            lm_robust(), lm_cluster(), glm_cluster(), logit(), invlogit(), 
+            save_reg()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">TREX: xgbtools.R</div>
+          <div class="fns">
+            getRangeFromTrees(), WTTA1D(), plot.xgb.Booster(), xgbImportancePlot()
+          </div>
+        </div>
+        <div class="old-script">
+          <div class="filename">Misc.: Predictiv helper functions.R</div>
+          <div class="fns">f_se_approx(), stars(), scores(), star_tables()</div>
+        </div>
+        <div class="old-script">
+          <div class="filename">Misc.: Code snippets library (lives in a slide deck)</div>
+          <div class="fns">simple_bar_plot(), bar_plot_regression_results(), 
+            stacked_horizontal_bar(), line_plot_function(). Various loose code 
+            snippets for: color gradients, cluster randomisation, stratified 
+            randomisation, Benjamini-Hochberg correction, pairwise comparisons,
+             log-odds conversion, creating dummy variables, calculting robust 
+             standard errors
+          </div>
+        </div>
+      </div>
+
+      <!-- ARROW -->
+      <div class="flow-arrow-col">
+        <span>refactor</span>
+        →
+      </div>
+
+      <!-- AFTER -->
+      <div class="pkg-panel">
+        <div class="pkg-header">
+          <span>Data analysis toolbox</span>
+          <span class="badge">R PACKAGE</span>
+        </div>
+        <div class="pkg-body">
+
+          <div class="module">
+            <div class="module-header"><span>R/ingest.R</span><span>data layer</span></div>
+            <div class="module-fns">
+              <span class="fn-tag exported">load_data()</span>
+              <span class="fn-tag">load_data_from_drive()</span>
+              <span class="fn-tag">load_data_from_db()</span>
+            </div>
+          </div>
+
+          <!-- <div class="module">
+            <div class="module-header"><span>R/clean.R</span><span>preprocessing; OPTIONAL</span></div>
+            <div class="module-fns">
+              <span class="fn-tag exported">drop_unused_cols()</span>
+              <span class="fn-tag exported">recode_vars()</span>
+              <span class="fn-tag exported">drop_test()</span>
+              <span class="fn-tag exported">drop_ineligible()</span>
+              <span class="fn-tag exported">drop_inattentive()</span>
+              <span class="fn-tag exported">drop_drop_outs()</span>
+            </div>
+          </div> -->
+
+          <div class="module">
+            <div class="module-header"><span>R/describe.R</span><span>descriptive stats/plots</span></div>
+            <div class="module-fns">
+              <span class="fn-tag exported">summarise()</span>
+              <span class="fn-tag">plot_single_choice()</span>
+              <span class="fn-tag">plot_multi_choice()</span>
+              <span class="fn-tag">plot_matrix()</span>
+            </div>
+          </div>
+
+          <div class="module">
+            <div class="module-header"><span>R/model.R</span><span>statistical modelling</span></div>
+            <div class="module-fns">
+              <span class="fn-tag exported">fit_reg()</span>
+              <span class="fn-tag exported">pairwise_comparisons()</span>
+              <span class="fn-tag exported">adjust_p()</span>
+              <span class="fn-tag exported">prob_to_logit()</span>
+              <span class="fn-tag exported">logit_to_prob()</span>
+              <span class="fn-tag">adjust_se()</span>
+              <span class="fn-tag">cluster_correction()</span>
+            </div>
+          </div>
+
+
+          <div class="module">
+            <div class="module-header"><span>R/report.R</span><span>output</span></div>
+            <div class="module-fns">
+              <span class="fn-tag exported">plot_bars()</span>
+              <span class="fn-tag exported">export_table()</span>
+              <span class="fn-tag">theme_bit()</span>
+              <span class="fn-tag">sig_stars()</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="dep-label">↳ external dependencies</div>
+        <div class="dep-row">
+          <span class="dep-tag">ggplot2</span>
+          <span class="dep-tag">dplyr</span>
+          <span class="dep-tag">tidyr</span>
+          <span class="dep-tag">MASS</span>
+          <span class="dep-tag">janitor</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DATA FLOW ═══ -->
+  <div>
+    <div class="section-label">02 — Data Flow Through the Package</div>
+    <div class="flow-diagram">
+      <h2>Typical user call sequence (public functions only)</h2>
+      <div class="flow-steps">
+
+        <div class="flow-step">
+          <div class="step-box">
+            <div class="step-module">User</div>
+            <div class="step-fn">CSV file or Database table </div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">ingest.R</div>
+            <div class="step-fn">load_data()</div>
+            <div class="step-io">→ raw df</div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">User</div>
+            <div class="step-fn">Data prep/ cleaning handled externally</div>
+            <div class="step-io">→ cleaned df</div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">describe.R</div>
+            <div class="step-fn">summarise()</div>
+            <div class="step-io">→ N/A</div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">model.R</div>
+            <div class="step-fn">fit_reg()</div>
+            <div class="step-io">→ model object</div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">model.R</div>
+            <div class="step-fn">adjust_p()</div>
+            <div class="step-io">→ model object</div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">report.R</div>
+            <div class="step-fn">plot_bars()</div>
+            <div class="step-io">→ggplot object/png</div>
+          </div>
+        </div>
+
+        <div class="connector">
+          <div class="c-arrow">→</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-box exported-step">
+            <div class="step-module">report.R</div>
+            <div class="step-fn">export_table()</div>
+            <div class="step-io">→ txt</div>
+          </div>
+        </div>
+
+      </div>
+
+      <p style="font-size:0.74rem; color:var(--muted); margin-top:20px; font-style:italic;">
+        Note: first row states the source of a blob/function (user vs. a script),
+        second row is the function name or file type, third row is what we'll
+        have after performing the analysis step (df or a plot)
+      </p>
+      <p style="font-size:0.74rem; color:var(--muted); margin-top:20px; font-style:italic;">
+        Note2: This flow illustrates fitting one model. If the goal is to fit 
+        multiple models, the user needs to implement a loop to pass each model
+        in turn. I will add a demo for this particular usecase during implementation
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ OPEN QUESTIONS ═══ -->
+  <div>
+    <div class="section-label">Notes</div>
+    <div class="questions">
+      <ul>
+        <li>
+          I've mostly added public functions that researchers can call directly: 
+          Chances are that I will need to implement some private helper 
+          functions along the way. Will add those to this doc as I go
+        </li>
+        <li>
+          We are currently working on moving away from local <code>.csv</code> 
+          files to a central data repository, hence the 
+          <code>load_data_from_db()</code> function
+        </li>
+        <li>
+          As discussed in the GDoc: I have ommited a collection of cleaning 
+          functions for now. Instead, I assume that users use the template in 
+          some capacity and either load a precleaned data set or frankenstein
+          cleaning routines between the <code>load_data()</code> and 
+          <code>summarise()</code> steps
+        </li>
+        <li>
+          Ideally, <code>summarise()</code> would be parametrised, and users pass
+          things like column names for whatever variables they want summary 
+          stats. Additionally, they can toggle plots. The plotting functions
+          themselves are private helpers (can't be called directly)
+        </li>
+        <li>
+          The familty in the <code>fit_reg()</code> function will be a parameter
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══ LEGEND ═══ -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#1a1a18; border-color:#1a1a18;"></div>
+      Public function
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#f0ede4; border-color:#ccc9be;"></div>
+      Private function (internal helper)
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#e8f0e8; border-color:#4a7c4a;"></div>
+      External dependency
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#fff5f0; border-color:#d4704a; border-style:dashed;"></div>
+      Existing scripts
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
