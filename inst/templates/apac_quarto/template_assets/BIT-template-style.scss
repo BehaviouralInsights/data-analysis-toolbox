@@ -1,0 +1,201 @@
+/*-- scss:defaults --*/
+
+// Last update January 7th 2025
+// Author: Erin Lawn
+
+//
+// Color system
+//
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #868e96 !default;
+$gray-700: #495057 !default;
+$gray-800: #373a3c !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
+
+// From brand bible:
+$blue:       #0000FF !default;
+$stone:      #F7EFDE !default;
+$sea:        #97D9E3 !default;
+$green:      #18A48C !default;
+$purple:     #9A1BBE !default;
+$yellow:     #FDB633 !default;
+$pink:       #F6A4B7 !default;
+$violet:     #A59BEE !default;
+$red:        #FF0039 !default;
+
+$primary:       $blue !default;
+$secondary:     $stone !default;
+$success:       $green !default;
+$info:          $pink !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $sea !default;
+$dark:          $black !default;
+
+$min-contrast-ratio:   2.6 !default;
+
+// Options
+
+$enable-rounded: false !default;
+
+// Body
+
+$body-color:    $black !default;
+
+// Fonts
+
+// stylelint-disable-next-line value-keyword-case
+$font-family-rem: "REM", sans-serif !default;
+$font-family-sans-serif:  "Century Gothic", Arial, "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$headings-font-weight:      400 !default;
+
+// Navbar
+
+$navbar-dark-hover-color:       rgba($white, 1) !default;
+$navbar-light-hover-color:      rgba($black, .9) !default;
+
+// Alerts
+
+$alert-border-width:            0 !default;
+
+// Progress bars
+
+$progress-height:               .5rem !default;
+
+/*-- scss:rules --*/
+
+
+// Variables
+
+$web-font-path: "https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap" !default;
+@if $web-font-path {
+  @import url($web-font-path);
+}
+
+// Logo
+#BIT-logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+}
+
+// Code
+
+.cell-output code {
+  background-color: #000;
+  padding: 10px;
+  color: #black
+}
+
+// Set colour for inline code
+code {
+  color:$green; // BIT Sea
+  // blue:       #0000FF
+  // stone:      #F7EFDE
+  // sea:        #97D9E3
+  // green:      #18A48C
+  // purple:     #9A1BBE
+  // yellow:     #FDB633
+  // pink:       #F6A4B7
+  // violet:     #A59BEE
+  // red:        #FF0039
+}
+
+// Table
+.pagedtable {
+  font-family: monospace;
+  font-size: 0.875em;
+  border: none !important;
+}
+
+.pagedtable .even {
+  background-color: #d7dfe6 !important;
+}
+
+// Typography
+
+body {
+  font-family: $font-family-sans-serif;
+  //font-size: 11px;
+  color: $black;
+  -webkit-font-smoothing: antialiased;
+}
+
+.title {
+  font-family: $font-family-rem;
+  //font-size: 24px;
+  font-weight: bold;
+  color: $black;
+}
+
+.subtitle {
+  font-family: $font-family-rem;
+  //font-size: 24px;
+  font-weight: normal;
+  color: #4d4f53;
+}
+
+h1 {
+  font-family: $font-family-sans-serif;
+  //font-size: 20px;
+  font-weight: bold;
+  color: $black;
+}
+
+h2 {
+  font-family: $font-family-sans-serif;
+  //font-size: 18px;
+  font-weight: bold;
+  color: $black;
+}
+
+h3 {
+  font-family: $font-family-sans-serif;
+  //font-size: 14px;
+  font-weight: normal;
+  color: $black;
+}
+
+h4 {
+  font-family: $font-family-sans-serif;
+  //font-size: 11px;
+  font-weight: bold;
+  color: $blue;
+}
+
+h5 {
+  font-family: $font-family-sans-serif;
+  //font-size: 11px;
+  font-weight: normal;
+  color: #4d4f53;
+}
+
+a {
+  color: $blue;
+}
+
+// Indicators
+
+.badge {
+  &.bg-light {
+    color: $dark;
+  }
+}
+
+// Progress bars
+
+.progress {
+  @include box-shadow(none);
+
+  .progress-bar {
+    font-size: 8px;
+    line-height: 8px;
+  }
+}

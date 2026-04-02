@@ -1,83 +1,86 @@
-test_that("sucessfully copies predictiv_cint_cleaning template", {
-  tmp_path <- withr::local_tempdir()
-  tmp_file <- "predictiv_cint_cleaning.R"
+test_that("all templates copy successfully", {
+  templates <- list.dirs(
+    system.file("templates", package = "bittoolbox"),
+    full.name = FALSE,
+    recursive = FALSE
+  )
+  for (template in templates) {
+    template_state <- .check_template_state(template)
 
-  suppressMessages(
-    use_template(
-      type = "predictiv_cint_cleaning",
-      destination = tmp_path
+    expect_equal(
+      template_state$copied_files,
+      template_state$expected_files,
+      info = paste("template:", template)
     )
-  )
+  }
+})
 
-  file_exists <- file.exists(
-    file.path(tmp_path, tmp_file)
-  )
-  expect_true(file_exists)
+test_that("successfully copies predictiv_cint_cleaning template", {
+  template <- "predictiv_cint_cleaning"
+  template_state <- .check_template_state(template)
+
+  expect_equal(template_state$copied_files, template_state$expected_files)
+})
+
+test_that("successfully copies apac_quarto template", {
+  template <- "apac_quarto"
+  template_state <- .check_template_state(template)
+
+  expect_equal(template_state$copied_files, template_state$expected_files)
 })
 
 test_that("overwrites existing file when overwrite is TRUE", {
-  tmp_path <- withr::local_tempdir()
-  tmp_file <- "predictiv_cint_cleaning.R"
+  tmp_target_path <- withr::local_tempdir()
+  template <- "predictiv_cint_cleaning"
   suppressMessages(
-    use_template(destination = tmp_path, filename = tmp_file, overwrite = FALSE)
+    use_template(name = template, target_path = tmp_target_path)
   )
 
   expect_message(
-    use_template(destination = tmp_path, filename = tmp_file, overwrite = TRUE),
+    use_template(name = template, target_path = tmp_target_path, overwrite = TRUE),
     "replaced existing file"
   )
 })
 
-test_that("copying fails when directory does not exist", {
-  expect_error(
-    use_template(destination = "./i_do_not_exist"),
-    class = "error_missing_dir"
-  )
-})
-
 test_that("copying fails when file exists and overwrite is FALSE", {
-  tmp_path <- withr::local_tempdir()
-  tmp_file <- "predictiv_cint_cleaning.R"
+  tmp_target_path <- withr::local_tempdir()
+  template <- "predictiv_cint_cleaning"
   overwrite <- FALSE
 
   suppressMessages(
-    use_template(
-      destination = tmp_path,
-      filename = tmp_file,
-      overwrite = overwrite
-    )
+    use_template(name = template, target_path = tmp_target_path, overwrite = overwrite)
   )
 
   expect_error(
-    use_template(destination = tmp_path, filename = tmp_file, overwrite = overwrite),
+    use_template(name = template, target_path = tmp_target_path, overwrite = overwrite),
     class = "error_file_exists"
   )
 })
 
 test_that("copying fails with non-character template name", {
   expect_error(
-    use_template(type = 42),
+    use_template(name = 42),
     class = "error_bad_argument"
   )
 })
 
 test_that("copying fails with empty template name", {
   expect_error(
-    use_template(type = ""),
+    use_template(name = ""),
     class = "error_bad_argument"
   )
 })
 
 test_that("copying fails with whitespace only template name", {
   expect_error(
-    use_template(type = " "),
+    use_template(name = " "),
     class = "error_bad_argument"
   )
 })
 
 test_that("copying fails with non-existing template name", {
   expect_error(
-    use_template(type = "i_do_not_exist.R"),
+    use_template(name = "i_do_not_exist.R"),
     class = "error_missing_template"
   )
 })
@@ -87,7 +90,7 @@ test_that("error when copying fails for another reason", {
   local_mocked_bindings(file.copy = function(...) FALSE, .package = "base")
 
   expect_error(
-    use_template(destination = tmp_path),
+    use_template(name = "predictiv_cint_cleaning", target_path = tmp_path),
     class = "error_copying_failed"
   )
 })

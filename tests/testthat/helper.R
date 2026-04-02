@@ -15,7 +15,26 @@ test_credentials <- list(
 
 test_query <- "SELECT * FROM lake_catalog.predictiv.results"
 
-# Helper: generate a path to a temporary file with a fileending `ext`
+# Generate a path to a temporary file with a file ending `ext`
 write_temp_file <- function(ext) {
   tempfile(fileext = paste0(".", ext))
+}
+
+# Check which files should and which files do exist after template was copied
+.check_template_state <- function(template) {
+  tmp_target_path <- withr::local_tempdir()
+  suppressMessages(
+    use_template(name = template, target_path = tmp_target_path)
+  )
+
+  expected_files <- list.files(
+    system.file("templates", template, package = "bittoolbox"),
+    recursive = TRUE
+  )
+  copied_files <- list.files(
+    file.path(tmp_target_path, template),
+    recursive = TRUE
+  )
+
+  list(expected_files = expected_files, copied_files = copied_files)
 }

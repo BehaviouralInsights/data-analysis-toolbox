@@ -4,54 +4,40 @@
 \alias{use_template}
 \title{Copy templates, bundled with the \code{bittoolbox} package}
 \usage{
-use_template(
-  type = "predictiv_cint_cleaning",
-  destination = ".",
-  filename = "predictiv_cint_cleaning.R",
-  overwrite = FALSE
-)
+use_template(name, target_path = ".", overwrite = FALSE)
 }
 \arguments{
-\item{type}{Character. Name of the template that should be copied.Defaults to
-\code{predictiv_cint_cleaning}}
+\item{name}{Character. Name of the template that should be copied.}
 
-\item{destination}{Character. Path to the directory where the template should
-be copied. Defaults to the current working directory (\code{"."}).}
-
-\item{filename}{Character. Name of the copied template file. Defaults to
-\code{"predictiv_cint_cleaning.R"}.}
+\item{target_path}{Character. Target path where the template will be copied to.}
 
 \item{overwrite}{Logical. Whether to overwrite an existing file. Defaults to
 FALSE.}
 }
 \value{
-Invisibly returns the path to the copied file.
+Invisibly returns the path to the target directory.
 }
 \description{
-Copies a template script, bundled with the \code{bittoolbox} package, to a
-specific destination. The following templates are currently included:
+Copies a template, bundled with the \code{bittoolbox} package, to the current
+working directory. The following templates are currently included:
 \itemize{
 \item \code{predictiv_cint_cleaning}: cleaning routines for survey data, collected on
 Predictiv via Cint
+\item \code{apac_quarto}: BIT APAC's Quarto template for "producing technical
+documents, formatted to resemble other BIT templates for Google docs, and
+advice in the BIT brand bible on Norm."
 }
 }
 \details{
 The function looks for a template file bundled with the package and copies
-it to the specified location. If a file already exists at the destination
+it to the specified location. If a file already exists at the target
 and \code{overwrite = FALSE}, the function aborts with an error message.
 }
 \examples{
 \dontrun{
-# Copies the default template to the default location
-use_template()
-
-# Copies `my_template` to `./my/destination/my_filename.R`, and overwrites
-# existing files with the same name
 use_template(
   "my_template",
-  "./my/destination/",
-  "my_filename.R",
-  TRUE
+  overwrite = TRUE
 )
 }
 }

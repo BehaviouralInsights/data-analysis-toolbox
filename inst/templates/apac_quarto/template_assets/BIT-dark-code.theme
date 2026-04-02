@@ -1,0 +1,197 @@
+{
+    "_comments": [
+        "Last update: March 25",
+        "Author: Bowen Fung",
+        "This file has been converted from: https://github.com/dempfi/ayu",
+        "Also see: https://github.com/ayu-theme"
+    ],
+    "background-color" : "#0a0e14",
+    "editor-colors": {
+        "BackgroundColor": "#0a0e14",
+        "BracketMatching": "#1e232d",
+        "CodeFolding": "#121a23",
+        "CurrentLine": "#00010a",
+        "CurrentLineNumber": "#414857",
+        "IconBorder": "#0e1218",
+        "IndentationLine": "#252b35",
+        "LineNumbers": "#323844",
+        "MarkBookmark": "#E59AAA",
+        "MarkBreakpointActive": "#f07178",
+        "MarkBreakpointDisabled": "#A0CFEB",
+        "MarkBreakpointReached": "#e6b673",
+        "MarkError": "#ff3333",
+        "MarkExecution": "#72CE98",
+        "MarkWarning": "#FFB549",
+        "ModifiedLines": "#6994bf",
+        "ReplaceHighlight": "#705728",
+        "SavedLines": "#91b362",
+        "SearchHighlight": "#414857",
+        "Separator": "#151a1e",
+        "SpellChecking": "#d96c75",
+        "TabMarker": "#1d222b",
+        "TemplateBackground": "#030810",
+        "TemplateFocusedPlaceholder": "#3c4250",
+        "TemplatePlaceholder": "#2b303a",
+        "TemplateReadOnlyPlaceholder": "#0d1016",
+        "TextSelection": "#273747",
+        "WordWrapMarker": "#1e222b"
+    },
+    "text-styles": {
+        "Alert": {
+            "background-color": "#2a0f15",
+            "bold": true,
+            "selected-text-color": "#ff3333",
+            "text-color": "#ff3333"
+        },
+        "Annotation": {
+            "selected-text-color": "#e6b673",
+            "text-color": "#e6b673"
+        },
+        "Attribute": {
+            "selected-text-color": "#F6A4B7",
+            "text-color": "#F6A4B7"
+        },
+        "BaseN": {
+            "selected-text-color": "#9A1BBE",
+            "text-color": "#9A1BBE"
+        },
+        "BuiltIn": {
+            "selected-text-color": "#72CE98",
+            "text-color": "#72CE98"
+        },
+        "Char": {
+            "selected-text-color": "#72CE98",
+            "text-color": "#72CE98"
+        },
+        "Comment": {
+            "italic": true,
+            "selected-text-color": "#626a73",
+            "text-color": "#626a73"
+        },
+        "CommentVar": {
+            "selected-text-color": "#97D9E3",
+            "text-color": "#97D9E3"
+        },
+        "Constant": {
+            "selected-text-color": "#97D9E3",
+            "text-color": "#97D9E3"
+        },
+        "ControlFlow": {
+            "bold": true,
+            "selected-text-color": "#ff8f40",
+            "text-color": "#ff8f40"
+        },
+        "DataType": {
+            "selected-text-color": "#ff8f40",
+            "text-color": "#ff8f40"
+        },
+        "DecVal": {
+            "selected-text-color": "#FDB633",
+            "text-color": "#FDB633"
+        },
+        "Documentation": {
+            "selected-text-color": "#626a73",
+            "text-color": "#626a73"
+        },
+        "Error": {
+            "selected-text-color": "#ff3333",
+            "text-color": "#ff3333"
+        },
+        "Extension": {
+            "bold": true,
+            "selected-text-color": "#F6A4B7",
+            "text-color": "#F6A4B7"
+        },
+        "Float": {
+            "selected-text-color": "#FDB633",
+            "text-color": "#FDB633"
+        },
+        "Function": {
+            "selected-text-color": "#97D9E3",
+            "text-color": "#97D9E3"
+        },
+        "Import": {
+            "selected-text-color": "#FFB549",
+            "text-color": "#FFB549"
+        },
+        "Information": {
+            "selected-text-color": "#FDB633",
+            "text-color": "#FDB633"
+        },
+        "Keyword": {
+            "bold": true,
+            "selected-text-color": "#ff8f40",
+            "text-color": "#ff8f40"
+        },
+        "Normal": {
+            "selected-text-color": "#F7EFDE",
+            "text-color": "#F7EFDE"
+        },
+        "Operator": {
+            "selected-text-color": "#18A48C",
+            "text-color": "#18A48C"
+        },
+        "Others": {
+            "selected-text-color": "#F6A4B7",
+            "text-color": "#F6A4B7"
+        },
+        "Preprocessor": {
+            "selected-text-color": "#f07178",
+            "text-color": "#f07178"
+        },
+        "RegionMarker": {
+            "background-color": "#173649",
+            "selected-text-color": "#A59BEE",
+            "text-color": "#A59BEE"
+        },
+        "SpecialChar": {
+            "selected-text-color": "#72CE98",
+            "text-color": "#72CE98"
+        },
+        "SpecialString": {
+            "selected-text-color": "#72CE98",
+            "text-color": "#72CE98"
+        },
+        "String": {
+            "selected-text-color": "#FFB549",
+            "text-color": "#FFB549"
+        },
+        "Variable": {
+            "selected-text-color": "#18A48C",
+            "text-color": "#18A48C"
+        },
+        "VerbatimString": {
+            "selected-text-color": "#FFB549",
+            "text-color": "#FFB549"
+        },
+        "Warning": {
+            "selected-text-color": "#9A1BBE",
+            "text-color": "#9A1BBE"
+        }
+    },
+    "custom-styles": {
+        "XML": {
+            "Attribute": {
+                "selected-text-color": "#0000FF",
+                "text-color": "#0000FF"
+            },
+            "Element": {
+                "selected-text-color": "#F6A4B7",
+                "text-color": "#F6A4B7",
+                "bold": false
+            },
+            "Element Symbols": {
+                "selected-text-color": "#307896",
+                "text-color": "#22647d"
+            },
+            "EntityRef": {
+                "selected-text-color": "#18A48C",
+                "text-color": "#18A48C"
+            },
+            "PEntityRef": {
+                "selected-text-color": "#18A48C",
+                "text-color": "#18A48C"
+            }
+        }
+    }
+}
