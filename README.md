@@ -26,7 +26,7 @@ The following modules are currently implemented
 - **Data cleaning** template: template with common data cleaning
   routines; as per the wish of researchers, this is not formally part of
   the package and has to be adapted manually for each survey. It is kept
-  in this repo for versioning and exposure
+  in this repo for version control and exposure
 
 # Getting started
 
@@ -46,7 +46,12 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(bittoolbox)
-## basic example code
+
+PATH_TO_DATA = './my_data_path/my_data.csv'
+
+# data <- import_from_file(PATH_TO_DATA) # Load example data
+use_template() # Copy default data cleaning template working directory
+#> Template predictiv_cint_cleaning successfully copied to ./predictiv_cint_cleaning.R
 ```
 
 # Contributing
