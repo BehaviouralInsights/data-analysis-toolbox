@@ -1,32 +1,61 @@
-# Data Analysis Toolbox
 
-This repository is a collection of `R` scripts and functions, implementing
-common data analysis tasks at BIT's Predictiv team. Though this library is
-focused on analysis around Predictiv surveys, it can be extended with other
-common analyses (see "Contributing" section).  
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-All analysis and parameter defaults were chosen based on the recommendations 
-given in the Blue Book v1.5.
+# BIT’s data analysis toolbox
+
+This repository is a collection of R scripts and functions, implementing
+common data analysis tasks at BIT’s Predictiv team. It is heavily
+focused on functionality that is used to analyze data from Predictiv
+surveys. Though we are generally open to contributions (see
+“Contributing” sections), they should be in line with the package’s
+scope. Pull requests and feature requests that are out of scope (e.g.,
+niche and/or one-off analyses) will be rejected.
+
+All analysis and parameter defaults were chosen based on the
+recommendations given in the Blue Book v1.5.
 
 ## Features
 
-An graphical overview of the library can be found under `doc/architecture-diagram`. 
+An graphical overview of the package can be found under
+`doc/architecture-diagram`.
 
-The following analysis are currently implemented
-- Lorem Ipsum
+The following modules are currently implemented
 
-## Getting started
+- **Data loading** module: load data from a local `csv` file, pull data
+  from a remote `DuckLake` database
+- **Data cleaning** template: template with common data cleaning
+  routines; as per the wish of researchers, this is not formally part of
+  the package and has to be adapted manually for each survey. It is kept
+  in this repo for versioning and exposure
 
-### Setup
+# Getting started
 
-Lorem Ipsum.
+## Installation
 
-### Using the toolbox
+You can install the development version of bittoolbox from
+[GitHub](https://github.com/) with:
 
-Lorem Ipsum.
+``` r
+# install.packages("pak")
+pak::pak("BehaviouralInsights/data-analysis-toolbox")
+```
 
-## Contributing
+## Example
 
-For features requests, bug reports, etc., please use the `Issues` tab in the repository.
+This is a basic example which shows you how to solve a common problem:
 
-If you really want to, you can contribute new code by creating a feature branch, openning a pull requests, and tagging the maintainer as reviewer. Merging to the `main` branch is blocked, and requires one approving review.
+``` r
+library(bittoolbox)
+## basic example code
+```
+
+# Contributing
+
+For features requests, bug reports, etc., please use the `Issues` tab in
+the repository. This is the preferred way to contribute to this package.
+
+Another (optional and more involved) way to contribute is to contribute
+your own custom functions. To do this, please branch off `main` and
+create a feature branch. Once you are done, create a pull request and
+tag the package maintainer as reviewer. **You won’t be able to directly
+commit to `main` or merge without review/approval of your PR.**

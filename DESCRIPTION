@@ -1,0 +1,37 @@
+Package: bittoolbox
+Title: Implementations for standard and often performed data analysis/processing tasks at BIT
+Version: 0.0.0.9000
+Authors@R: c(
+    person(
+      given = "Behavioural Insights Team",
+      role = "aut"
+    ),
+    person(
+      given = "Ilja",
+      family = "Wagner",
+      email = "ilja.wagner@bi.team",
+      role = "cre"
+    )
+  )
+Description: Collection of standard implementations for data loading, 
+  data inspection, fitting of linear models, and results plotting.
+License: GPL (>= 3) + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Suggests:
+    testthat (>= 3.0.0),
+    covr,
+    mockery,
+    todor
+Config/testthat/edition: 3
+Imports: 
+    readr,
+    rlang,
+    tibble,
+    glue,
+    duckdb,
+    DBI
+Depends: 
+    R (>= 3.5)
+LazyData: true
