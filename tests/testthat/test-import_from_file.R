@@ -1,5 +1,6 @@
 test_that("reads a CSV file into a tibble", {
   path <- write_temp_file("csv")
+  demo_data <- bittoolbox::ai_can_take_your_job_not_mine
   readr::write_csv(demo_data, path)
 
   result <- import_from_file(path)

@@ -26,7 +26,7 @@ The following modules are currently implemented
 - **Data cleaning** template: template with common data cleaning
   routines; as per the wish of researchers, this is not formally part of
   the package and has to be adapted manually for each survey. It is kept
-  in this repo for versioning and exposure
+  in this repo for version control and exposure
 
 # Getting started
 
@@ -42,17 +42,30 @@ pak::pak("BehaviouralInsights/data-analysis-toolbox")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example for an end-to-end analysis pipeline, using
+functions, bundled with this package:
 
 ``` r
 library(bittoolbox)
-## basic example code
+
+# Note: templates are not ready for consumption, but have to be adjusted by the user for their specific use case (adjusting variable names, toggling analysis steps, etc.) after calling `use_template`. Templates only provide a scaffold
+bittoolbox::use_template("predictiv_cint_cleaning") # Copy BIT UKs data cleaning template to working directory
+#> Template `predictiv_cint_cleaning`: 1 file copied to './predictiv_cint_cleaning'
+
+data <- bittoolbox::ai_can_take_your_job_not_mine # Load bundled example data
 ```
 
 # Contributing
 
 For features requests, bug reports, etc., please use the `Issues` tab in
 the repository. This is the preferred way to contribute to this package.
+
+Please note though that this only applies to core-functionality of the
+package: bundled templates are not covered by this, and are **not**
+maintained by the maintainers of this repo. If you want to change an
+existing template, please create a PR (see below); If you want to make a
+suggestion for a new template to be bundled, please open an issue and
+link to the files you want to bundle with this package.
 
 Another (optional and more involved) way to contribute is to contribute
 your own custom functions. To do this, please branch off `main` and
